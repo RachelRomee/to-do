@@ -1,37 +1,93 @@
+function updateCounters() {
+    // Total number of todos
+    var totalCount = document.getElementById('total-count');
+    var totalTodos = document.getElementsByClassName("todo").length;
+    totalCount.innerHTML = totalTodos;
 
-function updateCounters {
-  // Total number of todos
+    // Total number of completed todos
+    var completedCount = document.getElementById('completed-count');
+    var completedTodos = document.getElementsByClassName("completed").length;
+    completedCount.innerHTML = completedTodos;
 
-  // select the element containing the count
-  var totalCount = document.getElementById('total-count');
-  // count the number of todo's by their class name
-  var totalTodos = document.getElementsByClassName("todo").length;
-  // update the HTML inside the counter element
-  totalCount.innerHTML = totalTodos
+    // Total number of uncompleted todos
+    var todoCount = document.getElementById('todo-count');
+    var uncompletedTodos = totalTodos - completedTodos;
+    todoCount.innerHTML = uncompletedTodos;
+    }
 
-  // Total number of completed todos
-  var completedCount = document.getElementById('completed-count');
-  var completedTodos = document.getElementsByClassName("completed").length;
-  completedCount.innerHTML = completedTodos;
+    updateCounters();
 
-  // Total number of uncompleted todos
-  var todoCount = document.getElementById('todo-count');
-  var uncompletedTodos = totalTodos - completedTodos;
-  todoCount.innerHTML = uncompletedTodos;
-}
+    function toggleDone() {
+    var checkbox = this;
 
-updateCounters();
+    // check the checked status of the checkbox
+    if (checkbox.checked) {
+      // the "completed" class should be set on the parent element, the <li>
+      checkbox.parentElement.className = "todo completed";
+    } else {
+      checkbox.parentElement.className = "todo";
+    }
+    updateCounters();
+    }
 
-function toggleDone() {
-  var checkbox = this;
+    function submitTodo() {
+    var inputField = document.getElementById("new-todo");
+    var newTodoTitle = inputField.value;
+    createTodo(newTodoTitle);
 
-  // check the checked status of the checkbox
-  if (checkbox.checked) {
-    // the "completed" class should be set on the parent element, the <li>
-    checkbox.parentElement.className = "todo completed";
-  } else {
-    checkbox.parentElement.className = "todo";
+    // reset the value of the inputField to make it empty and
+    // ready to create new todos
+    inputField.value = null;
+
+    updateCounters();
+
+    function createTodo(title) {
+    // create a list item
+    var listItem = document.createElement("li");
+    listItem.className = "todo";
+
+    // create a checkbox and add it to the list item
+    var checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "todo-" + nextTodoId();
+    checkbox.value = "1";
+    checkbox.checked = false;
+    // assign the toggleDone function on the checkbox's onchange event
+    checkbox.onchange = toggleDone.bind(checkbox);
+    listItem.appendChild(checkbox);
+
+    // create some whitespace to put between the checkbox and the label
+    space = document.createTextNode(" ");
+    listItem.appendChild(space);
+
+    // create a label that holds the title and add it to the list item
+    var label = document.createElement("label");
+    label.htmlFor = checkbox.id;
+    label.innerHTML = title;
+    listItem.appendChild(label);
+
+    // add the list item with the checkbox, the whitespace and the label to
+    // the list
+    var list = document.getElementById("todolist");
+    list.appendChild(listItem);
+
+    updateCounters();
+    }
+    // Every todo has it's own id so we can add that to the corresponding label's
+    // "for" attribute to make sure that when we click the label, the checkbox
+    // toggles
+    function nextTodoId() {
+      return document.getElementsByClassName("todo").length + 1;
+    }
+    }
+    function cleanUpDoneTodos() {
+    var list = document.getElementById("todolist");
+    var doneItems = document.getElementsByClassName("completed");
+
+    // Reverse loop through the done todo items so we can remove them without
+    // changing the index of the remaining items when we remove them
+    for (var i = doneItems.length; i > 0; i--) {
+      list.removeChild(doneItems[i-1]);
+    }
+    updateCounters();
   }
-
-  updateCounters();
-}
